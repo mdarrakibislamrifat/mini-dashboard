@@ -14,7 +14,7 @@ export default function Sidebar() {
 
   return (
     <aside className="hidden md:flex flex-col w-64 h-screen bg-muted/30 border-r p-4">
-      <div className="text-xl font-semibold mb-6">Mini Dashboard</div>
+      <div className="text-2xl font-bold mb-6">Mini Dashboard</div>
       <nav className="space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
