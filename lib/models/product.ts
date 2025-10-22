@@ -18,6 +18,5 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ This ensures the model is only created once
 export const Product =
   mongoose.models.Product || mongoose.model("Product", productSchema);
