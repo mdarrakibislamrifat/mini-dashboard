@@ -6,21 +6,19 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StockIndicator } from "./indicators/stock-indicator";
 import { StatusBadge } from "./indicators/status-badge";
-import { SatisfactionRating } from "./indicators/satisfaction-rating";
-import { DeliveryProgress } from "./indicators/delivery-progress";
-import { SalesSparkline } from "./indicators/sales-sparkline";
 import { ActionMenu } from "./action-menu";
 
 export interface ProductData {
-  id: string;
+  _id: string;
+  id?: string;
   name: string;
+  sku: string;
   category: string;
-  stock: number;
-  status: "active" | "inactive";
-  satisfaction: number;
-  deliveryProgress: number;
-  salesData: number[];
   price: number;
+  stock: number;
+  description?: string;
+  image?: string;
+  active: boolean;
 }
 
 export const columns: ColumnDef<ProductData>[] = [
@@ -59,6 +57,18 @@ export const columns: ColumnDef<ProductData>[] = [
     ),
   },
   {
+    accessorKey: "sku",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        SKU
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
+  {
     accessorKey: "category",
     header: ({ column }) => (
       <Button
@@ -92,28 +102,24 @@ export const columns: ColumnDef<ProductData>[] = [
     cell: ({ row }) => <StockIndicator stock={row.getValue("stock")} />,
   },
   {
-    accessorKey: "status",
+    id: "status",
     header: "Status",
-    cell: ({ row }) => <StatusBadge status={row.getValue("status")} />,
+    cell: ({ row }) => {
+      const active = row.original.active;
+      return <StatusBadge status={active ? "active" : "inactive"} />;
+    },
   },
   {
-    accessorKey: "satisfaction",
-    header: "Satisfaction",
-    cell: ({ row }) => (
-      <SatisfactionRating rating={row.getValue("satisfaction")} />
-    ),
-  },
-  {
-    accessorKey: "deliveryProgress",
-    header: "Delivery",
-    cell: ({ row }) => (
-      <DeliveryProgress progress={row.getValue("deliveryProgress")} />
-    ),
-  },
-  {
-    accessorKey: "salesData",
-    header: "Sales (7d)",
-    cell: ({ row }) => <SalesSparkline data={row.getValue("salesData")} />,
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => {
+      const description = row.getValue("description") as string;
+      return (
+        <div className="max-w-xs truncate text-sm text-muted-foreground">
+          {description || "-"}
+        </div>
+      );
+    },
   },
   {
     id: "actions",

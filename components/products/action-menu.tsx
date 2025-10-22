@@ -8,13 +8,39 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
-import { ProductData } from "./columns";
+import type { ProductData } from "./columns";
+import { useState } from "react";
+import { mutate } from "swr";
 
 interface ActionMenuProps {
   product: ProductData;
 }
 
 export function ActionMenu({ product }: ActionMenuProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/products/${product._id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        mutate("/api/products");
+      } else {
+        alert("Failed to delete product");
+      }
+    } catch (error) {
+      console.error("[v0] Delete error:", error);
+      alert("Failed to delete product");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -24,16 +50,17 @@ export function ActionMenu({ product }: ActionMenuProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => console.log("Edit", product.id)}>
+        <DropdownMenuItem onClick={() => console.log("Edit", product._id)}>
           <Edit className="mr-2 h-4 w-4" />
           Edit
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => console.log("Delete", product.id)}
+          onClick={handleDelete}
+          disabled={isDeleting}
           className="text-destructive"
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          {isDeleting ? "Deleting..." : "Delete"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
