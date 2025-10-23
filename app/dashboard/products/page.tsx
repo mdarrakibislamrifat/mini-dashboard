@@ -14,6 +14,7 @@ export default function ProductsPage() {
       const res = await axios.get("/api/products");
       return res.data.data;
     },
+    refetchOnMount: "always",
   });
 
   // Mutation for deleting a product
