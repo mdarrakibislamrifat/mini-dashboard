@@ -38,6 +38,7 @@ import Link from "next/link";
 
 interface ProductsTableProps {
   data: ProductData[];
+  onDelete?: (id: string) => void;
 }
 
 export function ProductsTable({ data }: ProductsTableProps) {
