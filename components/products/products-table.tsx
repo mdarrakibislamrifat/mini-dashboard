@@ -30,19 +30,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { columns } from "./columns";
-import { mockProducts } from "./mock-data";
+
+import { columns, type ProductData } from "./columns";
 import { TableFilters } from "./table-filters";
 import { TablePagination } from "./table-pagination";
+import Link from "next/link";
 
-export function ProductsTable() {
+interface ProductsTableProps {
+  data: ProductData[];
+}
+
+export function ProductsTable({ data }: ProductsTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
-    data: mockProducts,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -62,6 +67,7 @@ export function ProductsTable() {
 
   return (
     <div className="space-y-4">
+      {/* Search & Filters */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <Input
           placeholder="Search products..."
@@ -71,7 +77,10 @@ export function ProductsTable() {
           }
           className="max-w-sm"
         />
+
         <div className="flex gap-2">
+          <Link href="/dashboard/products/create">
+            <Button>Add Product</Button></Link>
           <TableFilters table={table} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -100,6 +109,7 @@ export function ProductsTable() {
         </div>
       </div>
 
+      {/* Table */}
       <Card>
         <Table>
           <TableHeader>
@@ -110,16 +120,16 @@ export function ProductsTable() {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -149,6 +159,7 @@ export function ProductsTable() {
         </Table>
       </Card>
 
+      {/* Pagination */}
       <TablePagination table={table} />
     </div>
   );

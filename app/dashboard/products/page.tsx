@@ -1,15 +1,20 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { ProductsTable } from "@/components/products/products-table";
 
 export default function ProductsPage() {
-  return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground">Products</h1>
-        <p className="mt-2 text-muted-foreground">
-          Manage and view all your products
-        </p>
-      </div>
-      <ProductsTable />
-    </div>
-  );
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const res = await axios.get("/api/products");
+      return res.data.data;
+    },
+  });
+
+  if (isLoading) return <p>Loading products...</p>;
+  if (isError) return <p>Failed to load products.</p>;
+
+  return <ProductsTable data={data} />;
 }
